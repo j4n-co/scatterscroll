@@ -6,7 +6,6 @@ var docH = $(window).height()
 var items = []
 
 $('#header, #sidebar').css({position: 'fixed'})
-
 $('html, body').css({
   height: '100%',
   overflow: 'hidden'
@@ -18,10 +17,10 @@ $('#container').css({
   overflow: 'scroll',
   padding: 0
 })
-
 $('.post.group').css({
-  'padding-bottom': '50%'
+  'padding-bottom': '20%'
 })
+
 //scatter
 $.each($('.post.group'), function( index , article){
       
@@ -31,20 +30,33 @@ $.each($('.post.group'), function( index , article){
     var deg = Math.random(360)*100
     
     a.x = a.offset().top
-    a.timeline = new TimelineMax({paused:true})
-    a.timeline.to(a, 1, {top:0, rotation: 0, left: doc.width()/2 - a.width()/2 })
+    
+    a.afterBottomSwipe = function(){
+      a.css({position:'absolute'})
+      a.state = 'inFocus'
+    }
 
-    a.ceiling = new TimelineMax({paused: true})
-    a.ceiling.to(a, 1, { rotation: 30 })
+    a.afterTopSwipe = function(){
+      a.css({position:'fixed'})
+      a.state = 'atTop'
+    }
 
-    //initial position
-    a.css({
+    a.bottomSwipe = new TimelineMax({paused:true})
+    a.bottomSwipe.to(a, 0.5, { top:0, rotation: 0, left: doc.width()/2 - a.width()/2, onComplete: a.afterBottomSwipe })
+
+    a.topSwipe = new TimelineMax({paused: true})
+    a.topSwipe.to(a, 0.5, { top: -a.height()-500, rotation: 30 , onComplete: a.afterTopSwipe})
+    
+    a.state = 'atBottom'
+
+ 
+    a.css({ 
       position: 'fixed',
       left:left,
       top: top,
       WebkitTransform: 'rotate('+deg+'deg)'     
     })
-      
+    
     items.push(a)
 })
   
@@ -57,50 +69,68 @@ function MouseWheelHandler(event){
   }  
   var e = window.event || e;
   var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));  
+      console.log(item.state) 
 
-  var speed = 0.03
-  var progress = item.timeline.progress()
-  var endProgress = item.ceiling.progress()
-
-  //console.log('scrolltop:'+$('#container').scrollTop())
-  //console.log('height:'+ (item.height() - (doc.height()/2) ) )
-  //console.log(delta)
-  if (progress === 1 && delta === -1 && $('#container').scrollTop() <= 0 ){
-    //console.log('finished animation, scrolling down, at top of page')
-    item.css({position: 'absolute', left: item.offset.left, top: 0})
+  if ((item.outerHeight() - $('#container').outerHeight() -  $('#container').scrollTop()) === 0){
+    item.state = 'doneScrolling'
   }
-
-  else if (progress === 1 && delta === -1 && $('#container').scrollTop() > (item.height() - (doc.height()/2))  ) {
-    //console.log('finished animation, scrolling down, not at top of page')
-    var step = endProgress - (speed*delta)
-    if (step < 0){
-      step = 0.01
+  //scrolling down
+  if (delta === -1){
+    switch(item.state){
+      case 'atBottom': 
+        item.bottomSwipe.play()
+      break; 
+      
+      case 'inFocus':
+      
+      break;
+      
+      case 'doneScrolling':
+        item.topSwipe.play()
+      break;
     }
-    item.ceiling.progress(step)
-    
   }
-
-  else if (progress === 1 && delta === -1 && $('#container').scrollTop() > 0  ) {
-    //console.log('finished animation, scrolling down, not at top of page')
-    item.css({position: 'absolute', left: item.offset.left, top: 0})
-  } 
-
-  else if (progress === 1 && delta === 1 && $('#container').scrollTop() > 0 && $('#container').scrollTop() < (item.height() - (doc.height()/2)) ) {
-     //console.log('finished animation, scrolling up, not at top of page')
-     item.css({position: 'absolute', left: item.offset.left, top: 0})
- 
-  }
-
   else {
-    //console.log('else')
-    item.css({position: 'fixed'}) 
-    var step = progress - (speed*delta)
-    if (step < 0){
-      step = 0.01
-    }
-      item.timeline.progress(step)
+    switch(item.state){
+      case 'atBottom': 
+        item.bottomSwipe.reverse()
+      break; 
+      
+      case 'inFocus':
+      
+      break;
+      
+      case 'atTop':
+        item.topSwipe.reverse()
+      break;
+    }    
   }
-
+    /*
+    //at end of article
+    if( (item.outerHeight() - $('#container').outerHeight() -  $('#container').scrollTop()) === 0 ){
+      //not hung yet
+      if (item.topSwipe.progress() === 0 ) {
+        //hange it up
+        item.css({top: item.offset().top})
+        item.css({position:'fixed'})
+        item.topSwipe.play()
+      } 
+    } 
+    //not at end of article
+    else {
+      //then its down, swipe from bottom to 
+      item.bottomSwipe.play()
+    }
+    */
+  //}
+  //scrolling up
+  /*
+  else if (delta === 1){
+    //
+    if ( item.topSwipe.progress() === 1 ){
+    }
+  }
+  */
   return false
 }
 
