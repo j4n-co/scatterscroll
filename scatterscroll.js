@@ -1,102 +1,118 @@
 $(document).ready(function(){
   
-/*------- get the DOM items -------*/
-var doc = $(window)
-var body = $('body')
-var docH = $(window).height()
-var items = []
-var posts = $('.post.group')
-var container = $('#container')
+/*------- get the DOM elems -------*/
+var doc = $(window),
+    body = $('body'),
+    docH = $(window).height(),
+    items = [],
+    posts = $('.post.group'),
+    container = $('#container')
 
-
-/*------- default page styles (should eventually be moved to a CSS file) -------*/
-$('#header, #sidebar').css({position: 'fixed'})
-$('html, body').css({
-  height: '100%',
-  overflow: 'hidden'
-})
-$('#container').css({
-  position: 'absolute',
-  width: '100%',
-  height: '100%', 
-  overflow: 'scroll',
-  padding: 0
-})
-$('.post.group').css({
-  'padding-bottom': '20%'
-})
-
-
-/*------- drop the Items -------*/
-var dropItems = function(item){
+/*------- initialize first state,'atBottom', then add items to array -------*/
+function dropItems(item){
     var a = $(item)
-    var left = Math.random()*500 + (doc.width()/2 - a.width())
-    var top = docH -50
-    var deg = Math.random(360)*100    
-    a.x = a.offset().top
+        a.leftPos = Math.random()*500 + (doc.width()/2 - a.width())
+        a.deg = Math.random(360)*100
+        a.defaultClasses = a[0].className
+    a.css({ position: 'fixed', left:a.leftPos, top: docH, WebkitTransform: 'rotate('+a.deg+'deg)' })
 
-    a.css({ 
-      position: 'fixed',
-      left:left,
-      top: top,
-      WebkitTransform: 'rotate('+deg+'deg)'    
-    })
-    
     a.state = 'atBottom'
+    a[0].className = a.defaultClasses +' '+ a.state
+
     items.push(a)
 }
 
-/*------- attach the dropItems and push them into the array-------*/
+/*------- drop items-------*/
 $.each(posts, function( index , item){
   dropItems(item)
 })
 
 
 /*------- scatter -------*/
-var scatter = function(a){
+function scatter(a){
 
   /* bottom animation */
-  a.afterBottomSwipe = function(){
-    a.css({position:'absolute'})
-    bindMouseScroll()  
+  a.bottomSwipeOnStart = function(){
+    unbindMouseScroll()
+    a.css({position:'fixed'})
+    $('#posts').css({'position':'fixed'})
+  }
+  a.bottomSwipeOnComplete = function(){
+    unbindMouseScroll()
+    container.scrollTop(0)
+    a.css({position:'absolute', top: 0})
     a.state = 'inFocus'
+    a[0].className = a.defaultClasses +' '+ a.state
+
+    $('#posts').css({'height':a.outerHeight() + docH*0.3,'position':'absolute'})
+    window.setTimeout(function(){
+      bindMouseScroll()      
+    }, 500)
   }    
-  a.afterBottomSwipeRev = function(){
+  a.bottomSwipeOnReverseComplete = function(){
+    unbindMouseScroll()
     a.css({position:'fixed'})
     a.state = 'atBottom'
-    bindMouseScroll()
+    a[0].className = a.defaultClasses +' '+ a.state
+    
+    window.setTimeout(function(){
+      bindMouseScroll()      
+    }, 500)  
   } 
-  a.bottomSwipe = new TimelineMax({paused:true})
-  a.bottomSwipe.to(a, 0.5, { top:0, rotation: 0, left: doc.width()/2 - a.width()/2, onStart: unbindMouseScroll, onComplete: a.afterBottomSwipe, onReverseComplete: a.afterBottomSwipeRev })
-
 
   /* top animation */
-  a.afterTopSwipe = function(){
-    a.css({position:'fixed', top: a.offset().top})
+  a.topSwipeOnComplete = function(){
+    unbindMouseScroll()
     a.state = 'atTop'
-    bindMouseScroll()
+    a[0].className = a.defaultClasses +' '+ a.state
+ 
+    window.setTimeout(function(){
+      bindMouseScroll()
+    }, 500)
   }
-  a.afterTopSwipeRev = function(){
-    a.css({position:'absolute', top:'0'})
-    container.scrollTop(a.height())
+  a.topSwipeOnReverseComplete = function(){
+    unbindMouseScroll()    
+    a.css({position:'absolute' /*, top:a.offset().top*/ })
+    $('#posts').css({'height':a.outerHeight() + docH*0.3})
+    container.scrollTop( $('#posts').outerHeight())
     a.state = 'inFocus'
-    bindMouseScroll()
+    a[0].className = a.defaultClasses +' '+ a.state
+
+    window.setTimeout(function(){
+      bindMouseScroll()      
+    }, 500)
   }
 
-  a.onTopStart = function(){
-    a.css({position:'fixed', top: a.offset().top })
-    bindMouseScroll()
+  a.topSwipeOnStart = function(){
+    unbindMouseScroll()    
+    /*-- removes the 'top' css and sticks the bottom where is should be--*/
+    windowHeight = $(window).outerHeight();
+    objectHeight = a.outerHeight();
+    objectOffsetTop = a.offset().top;
+    bottomOffsetInPixels = windowHeight - objectHeight - objectOffsetTop;
+    a.css({position:'fixed', 'top':'auto', 'bottom':bottomOffsetInPixels })
+    
+    $('#posts').css({'height':a.outerHeight() + docH*0.3})
+ 
+    window.setTimeout(function(){
+      bindMouseScroll()
+    }, 500)   
   }
+
+  a.bottomSwipe = new TimelineMax({paused:true})  
+  a.bottomSwipe.to(a, 0.5, { top:$('#posts').offset().top, rotation: 0, transformOrigin:"0 50%", left: doc.width()/2 - a.width()/2 , onStart: a.bottomSwipeOnStart, onComplete: a.bottomSwipeOnComplete, onReverseComplete: a.bottomSwipeOnReverseComplete, ease:Sine.easeOut })
 
   a.topSwipe = new TimelineMax({paused: true})
-  a.topSwipe.to(a, 0.5, { rotation: 30 , onStart: a.onTopStart,onComplete: a.afterTopSwipe, onReverseComplete: a.afterTopSwipeRev })
+  a.topSwipe.to(a, 0.5, { bottom: docH-300 ,rotation: a.deg ,transformOrigin:"100% 50%",  onStart: a.topSwipeOnStart, onComplete: a.topSwipeOnComplete, onReverseComplete: a.topSwipeOnReverseComplete, ease:Sine.easeIn })
+
 }
 
 /*------- attaching scatter -------*/
 $.each(items, function( index , item){
   scatter(item)
 })
-  
+
+/*------- mousewheel handler -------*/  
 var item;
 var itemIndex; 
 function MouseWheelHandler(event){
@@ -108,21 +124,15 @@ function MouseWheelHandler(event){
   var e = window.event || e;
   var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));  
   
-  console.log(item.state) 
-  console.log(delta)
-
-  console.log(container.scrollTop())
-
   //scrolling down
   if (delta === -1){
-    console.log('scrolling down')
     switch(item.state){
       case 'atBottom': 
-        item.bottomSwipe.play()
+          item.bottomSwipe.play()          
       break; 
       
       case 'inFocus':
-        if ((item.outerHeight() - container.outerHeight() -  container.scrollTop()) < 10){
+        if (($('#posts').height() - container.outerHeight() -  container.scrollTop()) <= 30){
           item.state = 'doneScrolling'
         }       
       break;
@@ -136,18 +146,17 @@ function MouseWheelHandler(event){
       
       case 'atTop':
         itemIndex += 1
-        console.log(itemIndex)
-        console.log('######itemIndex#########')
+        itemIndex = Math.min(itemIndex, items.length -1)
         item = items[itemIndex]
       break;
     }
   }
   else {
-    console.log('scrolling up')
     switch(item.state){
       case 'atBottom': 
         item.bottomSwipe.reverse()
         itemIndex -= 1
+        itemIndex = Math.max(itemIndex, 0)
         item = items[itemIndex]
       break; 
       
@@ -158,7 +167,8 @@ function MouseWheelHandler(event){
       break;
       
       case 'atTop':
-        item.topSwipe.reverse()
+          item.topSwipe.reverse()
+          item.onTopStart()
       break;
     }    
   }
@@ -181,6 +191,7 @@ bindMouseScroll();
 
 
 function unbindMouseScroll(){
+  //alert('unbinding happening')
   if (doc[0].removeEventListener) {
       doc[0].removeEventListener("mousewheel", MouseWheelHandler, false)
       doc[0].removeEventListener("DOMMouseScroll", MouseWheelHandler, false)
