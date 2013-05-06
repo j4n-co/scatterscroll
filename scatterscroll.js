@@ -11,10 +11,11 @@ var doc = $(window),
 /*------- initialize first state,'atBottom', then add items to array -------*/
 function dropItems(item){
     var a = $(item)
-        a.leftPos = Math.random()*500 + (doc.width()/2 - a.width())
-        a.deg = Math.random(360)*100
-        a.defaultClasses = a[0].className
-    a.css({ position: 'fixed', left:a.leftPos, top: docH, WebkitTransform: 'rotate('+a.deg+'deg)' })
+    
+    a.leftPos = Math.random()*500 + (doc.width()/2 - a.width())
+    a.deg = Math.random(360)*100
+    a.defaultClasses = a[0].className
+    a.css({ position: 'fixed', left:a.leftPos, top: docH, transform: 'rotate('+a.deg+'deg)', webkitTransform: 'rotate('+a.deg+'deg)'  })
 
     a.state = 'atBottom'
     a[0].className = a.defaultClasses +' '+ a.state
@@ -34,13 +35,13 @@ function scatter(a){
   /* bottom animation */
   a.bottomSwipeOnStart = function(){
     unbindMouseScroll()
+    //$('#posts').css({'position':'fixed'})
     a.css({position:'fixed'})
-    $('#posts').css({'position':'fixed'})
   }
   a.bottomSwipeOnComplete = function(){
     unbindMouseScroll()
     container.scrollTop(0)
-    a.css({position:'absolute', top: 0})
+    a.css({position:'absolute', top: 0, bottom:'auto'})
     a.state = 'inFocus'
     a[0].className = a.defaultClasses +' '+ a.state
 
@@ -68,7 +69,7 @@ function scatter(a){
  
     window.setTimeout(function(){
       bindMouseScroll()
-    }, 500)
+    }, 700)
   }
   a.topSwipeOnReverseComplete = function(){
     unbindMouseScroll()    
@@ -80,7 +81,7 @@ function scatter(a){
 
     window.setTimeout(function(){
       bindMouseScroll()      
-    }, 500)
+    }, 700)
   }
 
   a.topSwipeOnStart = function(){
@@ -96,14 +97,14 @@ function scatter(a){
  
     window.setTimeout(function(){
       bindMouseScroll()
-    }, 500)   
+    }, 700)   
   }
 
   a.bottomSwipe = new TimelineMax({paused:true})  
-  a.bottomSwipe.to(a, 0.5, { top:$('#posts').offset().top, rotation: 0, transformOrigin:"0 50%", left: doc.width()/2 - a.width()/2 , onStart: a.bottomSwipeOnStart, onComplete: a.bottomSwipeOnComplete, onReverseComplete: a.bottomSwipeOnReverseComplete, ease:Sine.easeOut })
+  a.bottomSwipe.to(a, 0.5, { top:$('#posts').offset().top, rotation: 0, transformOrigin:"0 50%", left: doc.width()/2 - a.width()/2 , onStart: a.bottomSwipeOnStart, onComplete: a.bottomSwipeOnComplete, onReverseComplete: a.bottomSwipeOnReverseComplete })
 
   a.topSwipe = new TimelineMax({paused: true})
-  a.topSwipe.to(a, 0.5, { bottom: docH-300 ,rotation: a.deg ,transformOrigin:"100% 50%",  onStart: a.topSwipeOnStart, onComplete: a.topSwipeOnComplete, onReverseComplete: a.topSwipeOnReverseComplete, ease:Sine.easeIn })
+  a.topSwipe.to(a, 0.5, { bottom: docH-300 ,rotation: a.deg ,transformOrigin:"100% 50%",  onStart: a.topSwipeOnStart, onComplete: a.topSwipeOnComplete, onReverseComplete: a.topSwipeOnReverseComplete })
 
 }
 
@@ -121,7 +122,7 @@ function MouseWheelHandler(event){
     itemIndex = 0
     item = items[itemIndex]
   }  
-  var e = window.event || e;
+  var e = window.event || event;
   var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));  
   
   //scrolling down
@@ -178,6 +179,8 @@ function MouseWheelHandler(event){
 
 //binding
 function bindMouseScroll(){
+  //doc.bind('mousewheel', MouseWheelHandler)
+  
   if (doc[0].addEventListener) {
       doc[0].addEventListener("mousewheel", MouseWheelHandler, false)
       doc[0].addEventListener("DOMMouseScroll", MouseWheelHandler, false)
@@ -185,6 +188,10 @@ function bindMouseScroll(){
   else {
       doc[0].attachEvent("onmousewheel", MouseWheelHandler)
   }
+  
+  //console.log('binding')
+  //console.log(doc.data('events'))
+
 }
 
 bindMouseScroll();
@@ -192,6 +199,7 @@ bindMouseScroll();
 
 function unbindMouseScroll(){
   //alert('unbinding happening')
+  
   if (doc[0].removeEventListener) {
       doc[0].removeEventListener("mousewheel", MouseWheelHandler, false)
       doc[0].removeEventListener("DOMMouseScroll", MouseWheelHandler, false)
@@ -199,6 +207,10 @@ function unbindMouseScroll(){
   else {
       doc[0].detachEvent("onmousewheel", MouseWheelHandler)
   }
+  
+   // console.log('unbinding')
+  //doc.unbind('mousewheel', MouseWheelHandler)
+  //console.log(doc.data('events'))
 }
 
 })
