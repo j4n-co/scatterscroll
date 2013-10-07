@@ -31,6 +31,7 @@
     <![endif]-->
     <!-- Reset CSS -->
     <link rel="stylesheet" href="http://static.tumblr.com/thpaaos/DIcklyl4z/reset.css" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,900' rel='stylesheet' type='text/css'>
     <!-- Default Theme CSS -->
     <style type="text/css" media="screen">
       body {
@@ -663,6 +664,14 @@
     <style>
      body{
       background-color: rgb(33, 33, 34);
+      font-family: 'Raleway', sans-serif;
+      
+      background-image:url(http://upload.wikimedia.org/wikipedia/commons/5/57/Warsaw_-_Royal_Castle_Square.jpg) ;
+      
+      background-position: center center; 
+      background-repeat: no-repeat;
+      background-size: cover;
+      
       }
       html, body {
       height: 100%;
@@ -692,15 +701,13 @@
       
       #header h1 a{
       color: rgba(38, 38, 38, 1);
-      font-size: 52px;
+      font-size: 92px;
       text-align: left;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      max-width: 6em;
+      max-width: 50%;
       display: inline-block;
-      line-height: 1em;
-      font-family: helvetica;
-      font-weight: bold;
+      line-height: 0.8em;
+      font-weight: 800;
       }
       #header h1 a:hover{
         color: rgb(54, 54, 60);
@@ -735,7 +742,7 @@
       list-style: none;
       }     
      
-      #posts .post{
+      .post{
       background-color: white;
       
       padding: 2em;
@@ -749,12 +756,11 @@
       backface-visibility: hidden;
       perspective: 1000;   
       
-      -webkit-transition: opacity 0.3s;
-      -moz-transition: opacity 0.3s;
-      -ms-transition: opacity 0.3s;
-      transition: opacity 0.3s;
+      -webkit-transition: opacity 0.1s;
+      -moz-transition: opacity 0.1s;
+      -ms-transition: opacity 0.1s;
+      transition: opacity 0.1s;
 
-      opacity: 0.5;
       }
 
       .post .caption{
@@ -765,12 +771,36 @@
       iframe{
         max-width: 100%;
       }
-      #posts .post.inFocus{
+
+      .post.inFocus{
         opacity: 1;
         box-shadow: 1px 1px 35px -5px black;
       }
 
+      .post.atBottom, .post.atTop{
+        opacity: 1; 
+      }
+      
+      #next, #previous{
+        height: 50%;
+        position: fixed; 
+        top: 0;
+        right: 15px;
+        background-color: white;
+        opacity: 0.5;
+        width: 50px;
+        outline: none;
+        border: none;
+        z-index: 0;
+      }
 
+      #previous{
+        top: 50%;
+      }
+      
+      #next:hover, #previous:hover{
+        opacity: 0.7;
+      }
     </style>
     <!-- Custom CSS -->
 
@@ -915,7 +945,7 @@ left:  a.topLeft+40+"%"
                     {   top:$('#posts').offset().top, 
                         
                         rotation: 0, 
-                        transformOrigin:"left center", 
+                        transformOrigin:"left top", 
                         left: doc.width()/2 - a.width()/2 , 
                         onStart: a.bottomSwipeOnStart, 
                         onComplete: a.bottomSwipeOnComplete, 
@@ -924,13 +954,15 @@ left:  a.topLeft+40+"%"
 
   a.topSwipe = new TimelineMax({paused: true})
   a.topSwipe.to(a, 0.5, 
-                    {   bottom: docH-200,
+                    {   bottom: docH-300,
                         rotation: a.deg ,
-                        transformOrigin:"right center",  
+                        transformOrigin:"right bottom",
+                        left: a.topLeft-25+"%" ,   
                         onStart: a.topSwipeOnStart, 
                         onComplete: a.topSwipeOnComplete, 
                         onReverseComplete: 
                         a.topSwipeOnReverseComplete 
+
                     })
 
 }
@@ -955,31 +987,42 @@ function MouseWheelHandler(event, delta, deltaX, deltaY){
   //debugger
   //scrolling down
   //debugger
+  //console.log('click')
+  //console.log("     "+item.state)
   if (deltaY <= -1){
     switch(item.state){
       case 'atBottom': 
-          item.bottomSwipe.play()          
+          //after playing changes state
+          item.bottomSwipe.play()
       break; 
       
       case 'inFocus':
         if (($('#posts').height() - container.outerHeight() -  container.scrollTop()) <= 30){
           item.state = 'doneScrolling'
-        }       
+        }  
+        // clicking 
+        if (delta === 'click'){
+            item.topSwipe.play()
+            item.state = 'atTop'
+        }   
       break;
       
       case 'doneScrolling':
         item.topSwipe.play()
         if ((item.outerHeight() - container.outerHeight() -  container.scrollTop()) > 10){
           item.state = 'inFocus'
-          //items[itemIndex-1].state = 'atTop'
-          //items[itemIndex+1].state = 'atBottom'
         } 
+
       break;
       
       case 'atTop':
         itemIndex += 1
         itemIndex = Math.min(itemIndex, items.length -1)
         item = items[itemIndex]
+        
+        if (delta === 'click'){
+            item.bottomSwipe.play()
+        }  
       break;
     }
   }
@@ -1018,9 +1061,19 @@ function MouseWheelHandler(event, delta, deltaX, deltaY){
 
 //binding
 function bindMouseScroll(){
+  
   $(document).bind('mousewheel',function(event, delta, deltaX, deltaY){
     MouseWheelHandler(event, delta, deltaX, deltaY)
   })
+  
+  $('#next').bind('click', function(event){
+    MouseWheelHandler(event, 'click', 0, -1)
+  })
+  
+  $('#previous').bind('click', function(event){
+    MouseWheelHandler(event, 'click', 0, 1)
+  })
+
 }
 
 bindMouseScroll();
@@ -1028,7 +1081,18 @@ bindMouseScroll();
 
 function unbindMouseScroll(){
   $(document).unbind("mouseWheel")
+  
+  $('#next').unbind('click')
+  
+  $('#previous').unbind('click')
+
 }
+
+// first click to show the first
+$(window).load(function() {
+ // executes when complete page is fully loaded, including all frames, objects and images
+    MouseWheelHandler(false, 'click', 0, -1)
+})
 
 
 });
@@ -1060,11 +1124,13 @@ function unbindMouseScroll(){
     <section id="container" class="group">
       <header id="header">
         <section id="blog_info">
-          <h1><a href="/">strange things I see around me</a></h1>
+          <h1><a href="/">Warszawski Dzien</a></h1>
         </section>
+        <!--
         <section id="blog_avatar">
           <a href="/" class="avatar"><img src="http://assets.tumblr.com/images/default_avatar_64.gif"></a>
         </section>
+        -->
       </header>
       <aside id="sidebar">
         <ul class="links" style="display:none;">
@@ -1076,7 +1142,7 @@ function unbindMouseScroll(){
       </aside>
       <ul id="posts">
         <!-- START POSTS -->
-        <li class="post group"   >
+        <li class="post group">
           <section class="top link_post">
             <a href="http://en.wikipedia.org/wiki/South_Georgia_and_the_South_Sandwich_Islands" class="link">Places in the world you&#039;ve never heard of<span class="arrow"></span></a>
           </section>
@@ -1104,7 +1170,7 @@ function unbindMouseScroll(){
             </ul>
           </section>
         </li>
-        <li class="post group"   >
+        <li class="post group">
           <section class="top media" style="display:block;">
             <img src="http://24.media.tumblr.com/6fc49ccc996be8dc8c72924ff5a561cd/tumblr_mjywc2AneA1s93nr5o1_500.png" alt="Coat of Arms of Transnistria"> 
           </section>
@@ -1289,9 +1355,20 @@ function unbindMouseScroll(){
         </li>
         <!-- END POSTS -->
       </ul>
-      <footer id="footer">
+      <nav> 
+        <button id="next">
+            next
+        </button>
+
+        <button id="previous">
+            prev
+        </button>
+      </nav> 
+      <!--
+      <footer id="footer">  
         <section class="copyright">&copy; 2013 j4n.co</section>
       </footer>
+        -->
     </section>
     <script type="text/javascript">
       var Tumblelog = {};
