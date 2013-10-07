@@ -31,7 +31,7 @@
     <![endif]-->
     <!-- Reset CSS -->
     <link rel="stylesheet" href="http://static.tumblr.com/thpaaos/DIcklyl4z/reset.css" type="text/css">
-    <!-- Theme CSS -->
+    <!-- Default Theme CSS -->
     <style type="text/css" media="screen">
       body {
       -webkit-font-smoothing: antialiased;
@@ -72,70 +72,6 @@
       #header {
       height: 48px;
       margin: 0 0 60px 0;
-      }
-      #blog_info {
-      width: 700px;
-      margin: 0 60px 0 0;
-      float: left;
-      }
-      #blog_info h1 {
-      font-size: 36px;
-      font-weight: bold;
-      letter-spacing: -1px;
-      line-height: 36px;
-      margin: 8px 0 0 0;
-      }
-      #blog_info h1 a {
-      color: #333333;
-      }
-      #blog_info h1 a:hover {
-      color: #000;
-      }
-      #blog_info h1 a:active {
-      position: relative;
-      top: 1px;
-      }
-      #blog_info p, #blog_info .cont {
-      color: #646464;
-      margin-top: 7px;
-      }
-      .cont {
-      margin-bottom: 7px;
-      }
-      #blog_avatar {
-      width: 188px;
-      position: relative;
-      float: right;
-      }
-      #blog_avatar a {
-      width: 48px;
-      height: 48px;
-      -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, .21);
-      box-shadow: 0px 1px 3px rgba(0, 0, 0, .21);
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: block;
-      }
-      #blog_avatar img {
-      width: 48px;
-      -webkit-border-radius: 2px;
-      -moz-border-radius: 2px;
-      border-radius: 2px;
-      }
-      #blog_avatar a::before {
-      content: " ";
-      width: 46px;
-      height: 46px;
-      -webkit-border-radius: 2px;
-      -moz-border-radius: 2px;
-      border-radius: 2px;
-      border: 1px solid rgba(0,0,0,.1);
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      z-index: 999;
-      display: block;
       }
       #blog_avatar:hover a {
       width: 64px;
@@ -557,6 +493,7 @@
       border: 1px solid #d5d5d5;
       -webkit-border-radius: 4px;
       -moz-border-radius: 4px;
+      -ms-border-radius: 4px;
       border-radius: 4px;
       padding: 8px 12px;
       position: relative;
@@ -735,8 +672,8 @@
     </style>
     <!-- super theme css --> 
     <style>
-      body{
-      background-color: grey;
+     body{
+      background-color: rgb(33, 33, 34);
       }
       html, body {
       height: 100%;
@@ -749,17 +686,57 @@
       }
       #header, #sidebar{
       position: fixed;
-      top: 0;
+      bottom: 0;
+      z-index: 0;
       }
-      #header{
-      height: 0;
-      margin: 0;
+      #sidebar{
+        z-index: 2;
       }
+       #header{
+        height: 50px;
+        margin: 0;
+        width: 100%;
+        top: 40px;
+        left: 20px;
+        text-align: left; 
+      }
+      
+      #header h1 a{
+      color: rgba(38, 38, 38, 1);
+      font-size: 52px;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      max-width: 6em;
+      display: inline-block;
+      line-height: 1em;
+      font-family: helvetica;
+      font-weight: bold;
+      }
+      #header h1 a:hover{
+        color: rgb(54, 54, 60);
+      }
+
+      #blog_info{
+        text-align: left;
+
+      }
+      #blog_avatar {
+        margin-top: 1em;
+      }
+      #blog_avatar a{
+        overflow: hidden;
+        border-radius: 64px; 
+        display: inline-block;
+        height: 64px;
+        width: 64px;
+      }
+
       #container{
       position: absolute;
       width: 100%;
       height: 100%; 
-      overflow: scroll;
+      overflow: auto;
       padding: 0;
       }
       #posts {
@@ -769,33 +746,278 @@
       #posts .post{
       background-color: white;
       padding: 1em;
-      width: 500px;
+      width: 700px;
       margin-bottom: 20%;
       box-shadow: 1px 1px 35px -10px black;
       -webkit-backface-visibility: hidden;
       -webkit-perspective: 1000;    
       backface-visibility: hidden;
       perspective: 1000;   
+      -webkit-transition: box-shadow 0.3s, background-color 0.3s;
+      -moz-transition: box-shadow 0.3s, background-color 0.3s;
+      -ms-transition: box-shadow 0.3s, background-color 0.3s;
+      transition: box-shadow 0.3s, background-color 0.3s;
+      background-color: rgb(219, 221, 224);
       }
+
       .post .caption{
-      width: auto;
+            width: auto;
+            max-width: 100%;
       }
-      /* -- .post js state  --*/
-      /*
-      .atBottom{
-      position: fixed; 
+
+      iframe{
+        max-width: 100%;
       }
-      .inFocus{
-      position:absolute; 
-      top: 0;
+      #posts .post.inFocus{
+        opacity: 1;
+        box-shadow: 0 0 10em rgba(255,255,255, 0.25);
+        background-color: white;
       }
-      .atTop{
-      position:fixed;
-      top:auto;
-      }
-      */
+
+
     </style>
     <!-- Custom CSS -->
+
+
+
+
+
+
+<!-- CUSTOM SCRIPT --> 
+<script src='http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
+<script type="text/javascript" src="http://assets.tumblr.com/javascript/jquery-1.7.2.min.js"></script>
+<script src="http://brandonaaron.github.io/jquery-mousewheel/jquery.mousewheel.js"> </script>
+
+
+
+
+
+<script>
+
+
+$(document).ready(function(){
+  
+/*------- get the DOM elems -------*/
+var doc = $(window),
+    body = $('body'),
+    docH = $(window).height(),
+    items = [],
+    posts = $('.post.group'),
+    container = $('#container')
+
+/*------- initialize first state,'atBottom', then add items to array -------*/
+function dropItems(item){
+    var a = $(item)
+    a.leftPos = Math.random()*500 + (doc.width()/2 - a.width())
+    a.deg = Math.random(360)*100
+    a.defaultClasses = a[0].className
+    a.css({ position: 'fixed', left:a.leftPos, top: docH+100, transform: 'rotate('+a.deg+'deg)', webkitTransform: 'rotate('+a.deg+'deg)'  })
+
+    a.state = 'atBottom'
+    a[0].className = a.defaultClasses +' '+ a.state
+
+    items.push(a)
+}
+
+/*------- drop items-------*/
+$.each(posts, function( index , item){
+  dropItems(item)
+})
+
+
+/*------- scatter -------*/
+function scatter(a){
+
+  /* bottom animation */
+  a.bottomSwipeOnStart = function(){
+    unbindMouseScroll()
+    //$('#posts').css({'position':'fixed'})
+    a.css({position:'fixed'})
+  }
+  a.bottomSwipeOnComplete = function(){
+    unbindMouseScroll()
+    container.scrollTop(0)
+    a.css({position:'absolute', top: 0, bottom:'auto'})
+    a.state = 'inFocus'
+    a[0].className = a.defaultClasses +' '+ a.state
+
+    $('#posts').css({'height':a.outerHeight() + docH*0.3,'position':'absolute'})
+    window.setTimeout(function(){
+      bindMouseScroll()      
+    }, 50)
+  }    
+  a.bottomSwipeOnReverseComplete = function(){
+    unbindMouseScroll()
+    a.css({position:'fixed'})
+    a.state = 'atBottom'
+    a[0].className = a.defaultClasses +' '+ a.state
+    
+    window.setTimeout(function(){
+      bindMouseScroll()      
+    }, 50)  
+  } 
+
+  /* top animation */
+  a.topSwipeOnComplete = function(){
+    unbindMouseScroll()
+    a.state = 'atTop'
+    a[0].className = a.defaultClasses +' '+ a.state
+ 
+    window.setTimeout(function(){
+      bindMouseScroll()
+    }, 50)
+  }
+  a.topSwipeOnReverseComplete = function(){
+    unbindMouseScroll()    
+    a.css({position:'absolute' /*, top:a.offset().top*/ })
+    $('#posts').css({'height':a.outerHeight() + docH*0.3})
+    container.scrollTop( $('#posts').outerHeight())
+    a.state = 'inFocus'
+    a[0].className = a.defaultClasses +' '+ a.state
+
+    window.setTimeout(function(){
+      bindMouseScroll()      
+    }, 50)
+  }
+
+  a.topSwipeOnStart = function(){
+    unbindMouseScroll()    
+    /*-- removes the 'top' css and sticks the bottom where is should be--*/
+    windowHeight = $(window).outerHeight();
+    objectHeight = a.outerHeight();
+    objectOffsetTop = a.offset().top;
+    bottomOffsetInPixels = windowHeight - objectHeight - objectOffsetTop;
+    a.css({position:'fixed', 'top':'auto', 'bottom':bottomOffsetInPixels })
+    
+    $('#posts').css({'height':a.outerHeight() + docH*0.3})
+ 
+    window.setTimeout(function(){
+      bindMouseScroll()
+    }, 50)   
+  }
+
+  a.bottomSwipe = new TimelineMax({paused:true})  
+  a.bottomSwipe.to(a, 0.3, { top:$('#posts').offset().top, rotation: 0, transformOrigin:"0 50%", left: doc.width()/2 - a.width()/2 , onStart: a.bottomSwipeOnStart, onComplete: a.bottomSwipeOnComplete, onReverseComplete: a.bottomSwipeOnReverseComplete })
+
+  a.topSwipe = new TimelineMax({paused: true})
+  a.topSwipe.to(a, 0.3, { bottom: docH-200,rotation: a.deg ,transformOrigin:"100% 50%",  onStart: a.topSwipeOnStart, onComplete: a.topSwipeOnComplete, onReverseComplete: a.topSwipeOnReverseComplete })
+
+}
+
+/*------- attaching scatter -------*/
+$.each(items, function( index , item){
+  scatter(item)
+})
+
+/*------- mousewheel handler -------*/  
+var item;
+var itemIndex; 
+function MouseWheelHandler(event, delta, deltaX, deltaY){
+  
+  if (!item){
+    itemIndex = 0
+    item = items[itemIndex]
+  }  
+  //var e = window.event || event;
+  //var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));  
+  var e = event
+  //debugger
+  //scrolling down
+  //debugger
+  if (deltaY <= -1){
+    switch(item.state){
+      case 'atBottom': 
+          item.bottomSwipe.play()          
+      break; 
+      
+      case 'inFocus':
+        if (($('#posts').height() - container.outerHeight() -  container.scrollTop()) <= 30){
+          item.state = 'doneScrolling'
+        }       
+      break;
+      
+      case 'doneScrolling':
+        item.topSwipe.play()
+        if ((item.outerHeight() - container.outerHeight() -  container.scrollTop()) > 10){
+          item.state = 'inFocus'
+          //items[itemIndex-1].state = 'atTop'
+          //items[itemIndex+1].state = 'atBottom'
+        } 
+      break;
+      
+      case 'atTop':
+        itemIndex += 1
+        itemIndex = Math.min(itemIndex, items.length -1)
+        item = items[itemIndex]
+      break;
+    }
+  }
+  else {
+    switch(item.state){
+      case 'atBottom': 
+        item.bottomSwipe.reverse()
+        itemIndex -= 1
+        itemIndex = Math.max(itemIndex, 0)
+        item = items[itemIndex]
+      break; 
+      
+      case 'inFocus':
+        if(container.scrollTop() === 0 ){
+          item.bottomSwipe.reverse()
+        } 
+      break;
+      
+      case 'atTop':
+          item.topSwipe.reverse()
+      break;
+
+      case 'doneScrolling':
+        item.topSwipe.play()
+        if ((item.outerHeight() - container.outerHeight() -  container.scrollTop()) > 10){
+          item.state = 'inFocus'
+          items[itemIndex-1].state = 'atTop'
+          items[itemIndex+1].state = 'atBottom'
+        } 
+      break;
+    }    
+  }
+  return false
+}
+
+
+//binding
+function bindMouseScroll(){
+  $(document).bind('mousewheel',function(event, delta, deltaX, deltaY){
+    MouseWheelHandler(event, delta, deltaX, deltaY)
+  })
+}
+
+bindMouseScroll();
+
+
+function unbindMouseScroll(){
+  $(document).unbind("mouseWheel")
+}
+
+
+});
+
+</script> 
+
+
+
+
+
+
+
+<!-- END CUSTOM SCRIPT --> 
+
+
+
+
+
+
+
     <style type="text/css" media="screen">
     </style>
     <script type="text/javascript" language="javascript" src="http://assets.tumblr.com/javascript/tumblelog.js?db1199d6f1ae54decfa5902be552bda2"></script>
@@ -807,7 +1029,7 @@
     <section id="container" class="group">
       <header id="header">
         <section id="blog_info">
-          <h1><a href="/">j4n.co</a></h1>
+          <h1><a href="/">strange things I see around me</a></h1>
         </section>
         <section id="blog_avatar">
           <a href="/" class="avatar"><img src="http://assets.tumblr.com/images/default_avatar_64.gif"></a>
@@ -1040,7 +1262,6 @@
         <section class="copyright">&copy; 2013 j4n.co</section>
       </footer>
     </section>
-    <script type="text/javascript" src="http://assets.tumblr.com/javascript/jquery-1.7.2.min.js"></script>
     <script type="text/javascript">
       var Tumblelog = {};
       
@@ -1212,8 +1433,6 @@
       }, 1000);
       */
     </script>
-    <script src='http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
-    <script src='scatterscroll.js'></script>
     <script type="text/javascript">
       __qoptions = _qoptions = { qacct: 'p-19UtqE8ngoZbM' };
     </script>
