@@ -745,19 +745,24 @@
       }            
       #posts .post{
       background-color: white;
-      padding: 1em;
-      width: 700px;
+      padding: 2em;
+      width: 100%;
+      max-width: 700px;
       margin-bottom: 20%;
       box-shadow: 1px 1px 35px -10px black;
+      box-sizing: border-box;
       -webkit-backface-visibility: hidden;
       -webkit-perspective: 1000;    
       backface-visibility: hidden;
       perspective: 1000;   
-      -webkit-transition: box-shadow 0.3s, background-color 0.3s;
-      -moz-transition: box-shadow 0.3s, background-color 0.3s;
-      -ms-transition: box-shadow 0.3s, background-color 0.3s;
-      transition: box-shadow 0.3s, background-color 0.3s;
+      
+      -webkit-transition: opacity 0.3s;
+      -moz-transition: opacity 0.3s;
+      -ms-transition: opacity 0.3s;
+      transition: opacity 0.3s;
       background-color: rgb(219, 221, 224);
+
+      opacity: 0.5;
       }
 
       .post .caption{
@@ -897,10 +902,26 @@ function scatter(a){
   }
 
   a.bottomSwipe = new TimelineMax({paused:true})  
-  a.bottomSwipe.to(a, 0.3, { top:$('#posts').offset().top, rotation: 0, transformOrigin:"0 50%", left: doc.width()/2 - a.width()/2 , onStart: a.bottomSwipeOnStart, onComplete: a.bottomSwipeOnComplete, onReverseComplete: a.bottomSwipeOnReverseComplete })
+  a.bottomSwipe.to(a, 0.5, 
+                    {   top:$('#posts').offset().top, 
+                        rotation: 0, 
+                        transformOrigin:"0 50%", 
+                        left: doc.width()/2 - a.width()/2 , 
+                        onStart: a.bottomSwipeOnStart, 
+                        onComplete: a.bottomSwipeOnComplete, 
+                        onReverseComplete: a.bottomSwipeOnReverseComplete 
+                    })
 
   a.topSwipe = new TimelineMax({paused: true})
-  a.topSwipe.to(a, 0.3, { bottom: docH-200,rotation: a.deg ,transformOrigin:"100% 50%",  onStart: a.topSwipeOnStart, onComplete: a.topSwipeOnComplete, onReverseComplete: a.topSwipeOnReverseComplete })
+  a.topSwipe.to(a, 0.5, 
+                    {   bottom: docH-200,
+                        rotation: a.deg ,
+                        transformOrigin:"100% 50%",  
+                        onStart: a.topSwipeOnStart, 
+                        onComplete: a.topSwipeOnComplete, 
+                        onReverseComplete: 
+                        a.topSwipeOnReverseComplete 
+                    })
 
 }
 
